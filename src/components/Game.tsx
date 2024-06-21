@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps*/
 import "phaser";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 
 const Game: React.FC<any> = () => {
   const params = useParams();
-  const urlParams = new URLSearchParams(window.location.href);
   const { folder_game } = params as any;
 
   const [phaserGame, setPhaserGame] = useState<Phaser.Game>(null);

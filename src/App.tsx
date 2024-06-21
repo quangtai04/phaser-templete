@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { Suspense, lazy } from "react";
 import { Route, BrowserRouter, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
