@@ -3,9 +3,14 @@ import Phaser from 'phaser'
 const GROUND_KEY = 'ground'
 
 export class Game1 extends Phaser.Scene {
+    private _player: Phaser.Physics.Arcade.Sprite;
+    private _platforms: Phaser.Physics.Arcade.StaticGroup;
+    private _cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+
     constructor() {
         super({ key: "Game1" });
     }
+
     preload () {
         this.load.image("bomb", "/assets/bomb.png");
         this.load.image("ground", "/assets/platform.png");
@@ -15,32 +20,24 @@ export class Game1 extends Phaser.Scene {
             "/assets/dude.png", 
             {frameWidth: 32, frameHeight: 48});
     };
+
     create ()  {
         this.add.image(400, 300, "sky");
-        // const platforms = this.physics.add.staticGroup();
-        // platforms.create(400, 568, GROUND_KEY).setScale(2).reFreshBody();;
-        // platforms.create(600, 400, GROUND_KEY);
-        // platforms.create(50, 250, GROUND_KEY);
-        // platforms.create(750, 220, GROUND_KEY);
 
-        let platforms = this.physics.add.staticGroup();
-
-        let platform = platforms.create(400, 568, 'ground');
-        platform.setScale(2);
-        platform.refreshBody();
-
-        platforms.create(600, 400, GROUND_KEY);
-        platforms.create(50, 250, GROUND_KEY);
-        platforms.create(750, 220, GROUND_KEY);
+        this._platforms = this.physics.add.staticGroup();
+        this._platforms.create(400, 568, GROUND_KEY).setScale(2).reFreshBody();;
+        this._platforms.create(600, 400, GROUND_KEY);
+        this._platforms.create(50, 250, GROUND_KEY);
+        this._platforms.create(750, 220, GROUND_KEY);
 
         this.add.image(400, 300, "star");
         
-        const player = this.physics.add.sprite(100, 450, 'dude');
+        this._player = this.physics.add.sprite(100, 450, 'dude');
+        this._player.setBounce(0.2);
+        this._player.setCollideWorldBounds(true);
 
-        player.setBounce(0.2);
-        player.setCollideWorldBounds(true);
-        //player.body.setGravityY(1);
-        this.physics.add.collider(player, platform);
+        this.physics.add.collider(this._player, this._platforms);
+
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('dude', {start: 0, end: 3}),
@@ -60,30 +57,23 @@ export class Game1 extends Phaser.Scene {
             repeat: -1
         })
     };
+    
     update ()  {
-        const cursors = this.input.keyboard.createCursorKeys();
-        if (cursors.left.isDown)
-            {
-                player.setVelocityX(-160);
-            
-                player.anims.play('left', true);
-            }
-            else if (cursors.right.isDown)
-            {
-                player.setVelocityX(160);
-            
-                player.anims.play('right', true);
-            }
-            else
-            {
-                player.setVelocityX(0);
-            
-                player.anims.play('turn');
-            }
-            
-            if (cursors.up.isDown && player.body.touching.down)
-            {
-                player.setVelocityY(-330);
-            }
+        this._cursors = this.input.keyboard.createCursorKeys();
+        if (this._cursors.left.isDown){
+            this._player.setVelocityX(-160);
+            this._player.anims.play('left', true);
+        }
+        else if (this._cursors.right.isDown){
+            this._player.setVelocityX(160);
+            this._player.anims.play('right', true);
+        }
+        else {
+            this._player.setVelocityX(0);
+            this._player.anims.play('turn');
+        }  
+        if (this._cursors.up.isDown && this._player.body.touching.down){
+            this._player.setVelocityY(-330);
+        }
     };
 }
