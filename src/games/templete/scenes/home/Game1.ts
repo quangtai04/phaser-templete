@@ -7,6 +7,8 @@ export class Game1 extends Phaser.Scene {
     private _platforms: Phaser.Physics.Arcade.StaticGroup;
     private _stars: Phaser.Physics.Arcade.Group;
     private _cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+    private _score = 0;
+    private _scoreText: Phaser.GameObjects.Text;
 
     constructor() {
         super({ key: "Game1" });
@@ -68,12 +70,15 @@ export class Game1 extends Phaser.Scene {
             //(child as any).setGravityY(0);
             return true;
         })
-        function collectStar(player: any, star: any){
+        let collectStar = (player: any, star: any) => {
             star.disableBody(true, true);
+            this._score += 1;
+            this._scoreText.setText('Score: ' + this._score);
         }
         this.physics.add.collider(this._stars, this._platforms);
         this.physics.add.overlap(this._player, this._stars, collectStar, null, this);
         
+        this._scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', color: '#000' });
     };
 
     update ()  {
