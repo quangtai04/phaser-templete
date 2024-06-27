@@ -5,6 +5,7 @@ const GROUND_KEY = 'ground'
 export class Game1 extends Phaser.Scene {
     private _player: Phaser.Physics.Arcade.Sprite;
     private _platforms: Phaser.Physics.Arcade.StaticGroup;
+    private _stars: Phaser.Physics.Arcade.Group;
     private _cursors: Phaser.Types.Input.Keyboard.CursorKeys;
 
     constructor() {
@@ -25,7 +26,7 @@ export class Game1 extends Phaser.Scene {
         this.add.image(400, 300, "sky");
 
         this._platforms = this.physics.add.staticGroup();
-        this._platforms.create(400, 568, GROUND_KEY).setScale(2).reFreshBody();;
+        this._platforms.create(400, 568, GROUND_KEY).setScale(2).refreshBody();
         this._platforms.create(600, 400, GROUND_KEY);
         this._platforms.create(50, 250, GROUND_KEY);
         this._platforms.create(750, 220, GROUND_KEY);
@@ -56,8 +57,18 @@ export class Game1 extends Phaser.Scene {
             frameRate: 10,
             repeat: -1
         })
+
+        this._stars = this.physics.add.group({
+            key: 'star',
+            repeat: 11,
+            setXY: { x: 12, y: 0, stepX: 70 }
+        });
+        this._stars.children.iterate((child) => {
+            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+            return true;
+        })
     };
-    
+
     update ()  {
         this._cursors = this.input.keyboard.createCursorKeys();
         if (this._cursors.left.isDown){
