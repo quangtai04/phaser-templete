@@ -21,7 +21,7 @@ export class Game1 extends Phaser.Scene {
             "/assets/dude.png", 
             {frameWidth: 32, frameHeight: 48});
     };
-
+    
     create ()  {
         this.add.image(400, 300, "sky");
 
@@ -64,9 +64,16 @@ export class Game1 extends Phaser.Scene {
             setXY: { x: 12, y: 0, stepX: 70 }
         });
         this._stars.children.iterate((child) => {
-            child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+            (child as any).setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+            //(child as any).setGravityY(0);
             return true;
         })
+        function collectStar(player: any, star: any){
+            star.disableBody(true, true);
+        }
+        this.physics.add.collider(this._stars, this._platforms);
+        this.physics.add.overlap(this._player, this._stars, collectStar, null, this);
+        
     };
 
     update ()  {
