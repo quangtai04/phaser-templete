@@ -9,6 +9,8 @@ export class Game1 extends Phaser.Scene {
     private _cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     private _score = 0;
     private _scoreText: Phaser.GameObjects.Text;
+    private _bombs: Phaser.Physics.Arcade.Group;
+    private _gameOver = false;
 
     constructor() {
         super({ key: "Game1" });
@@ -70,15 +72,37 @@ export class Game1 extends Phaser.Scene {
             //(child as any).setGravityY(0);
             return true;
         })
-        let collectStar = (player: any, star: any) => {
+        const collectStar = (player: any, star: any) => {
             star.disableBody(true, true);
             this._score += 1;
             this._scoreText.setText('Score: ' + this._score);
+            if (this._stars.countActive(true) === 0){
+                this._stars.children.iterate((child) => {
+                    (child as any).enableBody(true, (child as any).x, 0, true, true);
+                    return true;
+                });
+                let x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+                let bomb = this._bombs.create(x, 16, 'bomb');
+                bomb.setBounce(1);
+                bomb.setCollideWorldBounds(true);
+                bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+            }
         }
         this.physics.add.collider(this._stars, this._platforms);
         this.physics.add.overlap(this._player, this._stars, collectStar, null, this);
         
         this._scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', color: '#000' });
+        
+        this._bombs = this.physics.add.group();
+        this.physics.add.collider(this._bombs, this._platforms);
+        const hitBomb = (player: any, bomb: any) => {
+            this.physics.pause();
+            player.setTint(0xff0000);
+            player.anims.play('turn');
+            this._gameOver = true;
+        }
+        this.physics.add.collider(this._player, this._bombs, hitBomb, null, this);
+
     };
 
     update ()  {
