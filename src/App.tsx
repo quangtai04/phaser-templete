@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import store from "./services/store";
 
 const Game = lazy(() => import("./components/Game"));
+const GameInput = lazy(() => import("./components/game-input/GameInput"));
 
 const App: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ const App: React.FC = () => {
         <Suspense fallback={<></>}>
           <Routes>
             <Route path="/game/:folder_game" element={<Game />} />
+            <Route path="/dev" element={<GameInput />} />
             <Route path="/" element={<></>} />
           </Routes>
         </Suspense>

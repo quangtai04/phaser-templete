@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
     "@reduxjs/toolkit": "^2.2.5",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -11,6 +12,7 @@
     "@types/node": "^16.18.101",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "fetch": "^1.1.0",
     "phaser": "^3.80.1",
     "phaser3-rex-plugins": "^1.80.4",
     "react": "^18.3.1",
@@ -24,6 +26,16 @@
     "scss": "^0.2.4",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@types/pixi.js": "^5.0.0",
+    "axios-mock-adapter": "^1.18.1",
+    "prettier": "^2.0.4",
+    "react-app-rewired": "^2.1.6",
+    "story-tab": "^1.0.21",
+    "story-tab-react": "^1.0.11",
+    "tslint": "^6.1.1",
+    "wasm-loader": "^1.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
