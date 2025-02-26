@@ -27,24 +27,29 @@ const GameInput: React.FC<GameInputProps> = (props) => {
   const [file, setFile] = useState<File | null>(null);
 
   const getResources = (newJson) => {
-    extractResources(newJson.data.resource, null).then((result: Result) => {
-      if (result.duplicatedKeys.length > 0) {
+    extractResources(newJson.data.resource, null)
+      .then((result: Result) => {
+        if (result.duplicatedKeys.length > 0) {
+          setError_warning(result);
+          console.log(result);
+          toast.error("Có một số bản ghi trùng id, vui lòng kiểm tra lại!");
+          return;
+        }
+        if (result.duplicatedPaths.length > 0) {
+          toast.warning("Có một số bản ghi trùng path, vui lòng kiểm tra lại!");
+        }
+
+        newJson.data.resource = result.resources;
+
+        setGameData({ ...gameData, ...newJson });
+        setGameDataEditor({ ...gameData, ...newJson });
         setError_warning(result);
-        toast.error("Có một số bản ghi trùng id, vui lòng kiểm tra lại!");
-        return;
-      }
-      if (result.duplicatedPaths.length > 0) {
-        toast.warning("Có một số bản ghi trùng path, vui lòng kiểm tra lại!");
-      }
 
-      newJson.data.resource = result.resources;
-
-      setGameData({ ...gameData, ...newJson });
-      setGameDataEditor({ ...gameData, ...newJson });
-      setError_warning(result);
-
-      toast.success("Nhập excel thành công! Nhấn Cập nhật/Tạo mới để lưu.");
-    });
+        toast.success("Nhập excel thành công! Nhấn Cập nhật/Tạo mới để lưu.");
+      })
+      .catch((error) => {
+        toast.error(error);
+      });
   };
 
   return (
