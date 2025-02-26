@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import MonacoEditor, { loader } from "@monaco-editor/react";
 import prettier from "prettier/standalone";
 import parserBabel from "prettier/parser-babel";
