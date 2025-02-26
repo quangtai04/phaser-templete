@@ -4,6 +4,9 @@ import parserBabel from "prettier/parser-babel";
 import { useRef, useState } from "react";
 import "./style.scss";
 import { isNullOrUndefined } from "../../games/skframework/util/Util";
+import { toast } from "react-toastify";
+import { xlsParser } from "../../services/game/xlsParser";
+import { extractResources, Result } from "../../services/game/formatGameData";
 
 export interface GameInputProps {}
 const GameInput: React.FC<GameInputProps> = (props) => {
@@ -12,9 +15,37 @@ const GameInput: React.FC<GameInputProps> = (props) => {
   });
 
   const [gameData, setGameData] = useState<any>({});
+  const [gameDataEditor, setGameDataEditor] = useState<any>({});
   const [isErrorDataGame, setIsErrorDataGame] = useState<boolean>(false);
+  const [error_warning, setError_warning] = useState<Result>({
+    resources: [],
+    errors: [],
+    duplicatedKeys: [],
+    duplicatedPaths: [],
+  });
   const ref_file = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
+
+  const getResources = (newJson) => {
+    extractResources(newJson.data.resource, null).then((result: Result) => {
+      if (result.duplicatedKeys.length > 0) {
+        setError_warning(result);
+        toast.error("Có một số bản ghi trùng id, vui lòng kiểm tra lại!");
+        return;
+      }
+      if (result.duplicatedPaths.length > 0) {
+        toast.warning("Có một số bản ghi trùng path, vui lòng kiểm tra lại!");
+      }
+
+      newJson.data.resource = result.resources;
+
+      setGameData({ ...gameData, ...newJson });
+      setGameDataEditor({ ...gameData, ...newJson });
+      setError_warning(result);
+
+      toast.success("Nhập excel thành công! Nhấn Cập nhật/Tạo mới để lưu.");
+    });
+  };
 
   return (
     <>
@@ -47,7 +78,25 @@ const GameInput: React.FC<GameInputProps> = (props) => {
             </div>
           </div>
           <div className="d-flex justify-content-center">
-            <button className="btn btn-outline-primary">Save</button>
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => {
+                if (!isNullOrUndefined(file)) {
+                  xlsParser
+                    .parse([file])
+                    .then((newJson) => {
+                      getResources(newJson);
+                    })
+                    .catch((error) => {
+                      toast.error(error);
+                    });
+                } else {
+                  toast.error("Please select a file");
+                }
+              }}
+            >
+              Parse
+            </button>
           </div>
         </div>
         <div className="p-2" style={{ width: "80%" }}>
@@ -80,7 +129,7 @@ const GameInput: React.FC<GameInputProps> = (props) => {
                 }
               }, 100);
             }}
-            value={JSON.stringify("", null, 2)}
+            value={JSON.stringify(gameDataEditor ?? "", null, 2)}
           />
         </div>
       </div>
